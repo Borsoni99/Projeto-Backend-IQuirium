@@ -36,7 +36,8 @@ A captura de feedback dos usuários visa otimizar a experiência de uso da plata
 
 ### Diagrama de Classe - Produto
 
-![image](https://github.com/user-attachments/assets/cac149e4-dba0-41a7-b92e-fc5569918a37)
+![image](https://github.com/user-attachments/assets/8ea2ff53-faa6-42a0-9576-6380dba3e6cb)
+
 
 ### 2. Feedbacks entre Usuários
 Esta funcionalidade permite a troca de feedbacks entre os usuários da plataforma IQuirium, promovendo uma cultura de colaboração e desenvolvimento pessoal. Os usuários podem solicitar feedback de outros ou enviá-lo espontaneamente.
@@ -62,7 +63,7 @@ Facilitar a troca de avaliações construtivas entre os usuários, promovendo o 
 - Engajamento dos usuários medido pela recorrência.
 
 ### Diagrama de Classe - Usuario 
-![image](https://github.com/user-attachments/assets/8bc955e8-c9ef-4b66-93ce-585b1129a929)
+![image](https://github.com/user-attachments/assets/cfdace77-0854-4028-ab26-23d42b763ed9)
 
 ---
 
@@ -91,4 +92,5 @@ Facilitar a troca de avaliações construtivas entre os usuários, promovendo o 
 
 ---
 ## Diagrama de caso de uso
-![image](https://github.com/user-attachments/assets/9cc2ea8c-df74-4e91-b946-889b89897718)
+![image](https://github.com/user-attachments/assets/f4996cbe-75dc-4675-b388-dd74bf82cc97)
+
