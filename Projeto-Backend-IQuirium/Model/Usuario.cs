@@ -6,5 +6,6 @@
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Criado_em { get; set; }
+
     }
 }
