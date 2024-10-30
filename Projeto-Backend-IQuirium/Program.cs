@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Projeto_Backend_IQuirium.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +9,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ProjetoBackendIQuiriumContext>(opt =>
+{
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("postgre"));
+});
 
 var app = builder.Build();
 
