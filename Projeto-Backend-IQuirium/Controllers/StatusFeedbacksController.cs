@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
-    public class StatusFeedbacksController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class StatusFeedbacksController : ControllerBase
     {
         private readonly ProjetoBackendIQuiriumContext _context;
 
@@ -15,14 +16,16 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        // GET: StatusFeedbacks
+        // GET: api/StatusFeedbacks
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var projetoBackendIQuiriumContext = _context.StatusFeedbacks.Include(s => s.Feedback);
-            return View(await projetoBackendIQuiriumContext.ToListAsync());
+            return Ok(await projetoBackendIQuiriumContext.ToListAsync());
         }
 
-        // GET: StatusFeedbacks/Details/5
+        // GET: api/StatusFeedbacks/Details/5
+        [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -38,21 +41,11 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return NotFound();
             }
 
-            return View(statusFeedback);
+            return Ok(statusFeedback);
         }
 
-        // GET: StatusFeedbacks/Create
-        public IActionResult Create()
-        {
-            ViewData["Id_feedback"] = new SelectList(_context.Feedbacks, "Id", "Conteudo");
-            return View();
-        }
-
-        // POST: StatusFeedbacks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // POST: api/StatusFeedbacks/Create
+        [HttpPost("Create")]
         public async Task<IActionResult> Create([Bind("Id,Id_feedback,Status,Atualizado_em")] StatusFeedback statusFeedback)
         {
             if (ModelState.IsValid)
@@ -60,39 +53,18 @@ namespace Projeto_Backend_IQuirium.Controllers
                 statusFeedback.Id = Guid.NewGuid();
                 _context.Add(statusFeedback);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(Details), new { id = statusFeedback.Id }, statusFeedback);
             }
-            ViewData["Id_feedback"] = new SelectList(_context.Feedbacks, "Id", "Conteudo", statusFeedback.Id_feedback);
-            return View(statusFeedback);
+            return BadRequest(ModelState);
         }
 
-        // GET: StatusFeedbacks/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var statusFeedback = await _context.StatusFeedbacks.FindAsync(id);
-            if (statusFeedback == null)
-            {
-                return NotFound();
-            }
-            ViewData["Id_feedback"] = new SelectList(_context.Feedbacks, "Id", "Conteudo", statusFeedback.Id_feedback);
-            return View(statusFeedback);
-        }
-
-        // POST: StatusFeedbacks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // PUT: api/StatusFeedbacks/Edit/5
+        [HttpPut("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Id_feedback,Status,Atualizado_em")] StatusFeedback statusFeedback)
         {
             if (id != statusFeedback.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -113,44 +85,24 @@ namespace Projeto_Backend_IQuirium.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            ViewData["Id_feedback"] = new SelectList(_context.Feedbacks, "Id", "Conteudo", statusFeedback.Id_feedback);
-            return View(statusFeedback);
+            return BadRequest(ModelState);
         }
 
-        // GET: StatusFeedbacks/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // DELETE: api/StatusFeedbacks/Delete/5
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var statusFeedback = await _context.StatusFeedbacks
-                .Include(s => s.Feedback)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var statusFeedback = await _context.StatusFeedbacks.FindAsync(id);
             if (statusFeedback == null)
             {
                 return NotFound();
             }
 
-            return View(statusFeedback);
-        }
-
-        // POST: StatusFeedbacks/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var statusFeedback = await _context.StatusFeedbacks.FindAsync(id);
-            if (statusFeedback != null)
-            {
-                _context.StatusFeedbacks.Remove(statusFeedback);
-            }
-
+            _context.StatusFeedbacks.Remove(statusFeedback);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
         private bool StatusFeedbackExists(Guid id)

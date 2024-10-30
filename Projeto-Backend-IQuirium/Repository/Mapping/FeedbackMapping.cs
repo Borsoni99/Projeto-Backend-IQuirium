@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Projeto_Backend_IQuirium.Model;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Projeto_Backend_IQuirium.Repository.Mapping
 {

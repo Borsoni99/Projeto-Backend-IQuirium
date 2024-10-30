@@ -5,7 +5,9 @@ using Projeto_Backend_IQuirium.Repository;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
-    public class UsuariosController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsuariosController : ControllerBase
     {
         private readonly ProjetoBackendIQuiriumContext _context;
 
@@ -14,13 +16,15 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        // GET: Usuarios
+        // GET: api/Usuarios
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Usuarios.ToListAsync());
+            return Ok(await _context.Usuarios.ToListAsync());
         }
 
-        // GET: Usuarios/Details/5
+        // GET: api/Usuarios/Details/5
+        [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -35,20 +39,11 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return NotFound();
             }
 
-            return View(usuario);
+            return Ok(usuario);
         }
 
-        // GET: Usuarios/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // POST: api/Usuarios/Create
+        [HttpPost("Create")]
         public async Task<IActionResult> Create([Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
         {
             if (ModelState.IsValid)
@@ -56,37 +51,18 @@ namespace Projeto_Backend_IQuirium.Controllers
                 usuario.Id = Guid.NewGuid();
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(Details), new { id = usuario.Id }, usuario);
             }
-            return View(usuario);
+            return BadRequest(ModelState);
         }
 
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // PUT: api/Usuarios/Edit/5
+        [HttpPut("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
         {
             if (id != usuario.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -107,42 +83,24 @@ namespace Projeto_Backend_IQuirium.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            return View(usuario);
+            return BadRequest(ModelState);
         }
 
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // DELETE: api/Usuarios/Delete/5
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
                 return NotFound();
             }
 
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
-            {
-                _context.Usuarios.Remove(usuario);
-            }
-
+            _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
         private bool UsuarioExists(Guid id)
