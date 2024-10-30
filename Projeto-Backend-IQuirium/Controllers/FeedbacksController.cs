@@ -16,30 +16,23 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        [HttpPost("SolicitarFeedback")]
-        public async Task<IActionResult> SolicitarFeedback([FromBody] SolicitarFeedbackDTO solicitacaoDTO)
+        [HttpGet("SolicitarFeedback/{id}")]
+        public async Task<IActionResult> SolicitarFeedback(Guid id)
         {
             // Verificar se o usuário existe
-            var usuario = await _context.Usuarios.FindAsync(solicitacaoDTO.Id_usuario);
+            var usuario = await _context.Usuarios.FindAsync(id);
 
             if (usuario == null)
             {
-                return BadRequest("Usuário inválido.");
+                return NotFound("Usuário não encontrado.");
             }
 
-            // Criar a solicitação de feedback
-            var novaSolicitacao = new Feedback
-            {
-                Id_usuario = solicitacaoDTO.Id_usuario,
-                Tipo_feedback = solicitacaoDTO.Tipo_feedback,
-                Conteudo = solicitacaoDTO.Conteudo,
-                Criado_em = DateTime.Now
-            };
+            // Obter todos os feedbacks do usuário
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.Id_usuario == id || f.Id_destinatario == id)
+                .ToListAsync();
 
-            _context.Feedbacks.Add(novaSolicitacao);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(SolicitarFeedback), new { id = novaSolicitacao.Id }, novaSolicitacao);
+            return Ok(feedbacks);
         }
 
         [HttpPost("EnviarFeedback")]
@@ -69,13 +62,6 @@ namespace Projeto_Backend_IQuirium.Controllers
 
             return CreatedAtAction(nameof(EnviarFeedback), new { id = novoFeedback.Id }, novoFeedback);
         }
-    }
-
-    public class SolicitarFeedbackDTO
-    {
-        public Guid Id_usuario { get; set; }
-        public TipoFeedbackEnum Tipo_feedback { get; set; }
-        public string Conteudo { get; set; }
     }
 
     public class EnviarFeedbackDTO
