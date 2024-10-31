@@ -50,14 +50,16 @@ namespace Projeto_Backend_IQuirium.Controllers
             {
                 Nome = usuarioDTO.Nome,
                 Email = usuarioDTO.Email,
-                Criado_em = DateTime.Now
+                Criado_em = DateTime.UtcNow
             };
-
             _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUsuario), new { id = novoUsuario.Id }, novoUsuario);
+            // Use a different response type
+            return Ok(novoUsuario);
+            //return CreatedAtAction(nameof(GetUsuario), new { id = novoUsuario.Id }, novoUsuario);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(Guid id)

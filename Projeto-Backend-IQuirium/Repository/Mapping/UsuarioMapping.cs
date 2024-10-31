@@ -9,14 +9,19 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
     {
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
-            builder.ToTable("usuario");
+            builder.ToTable("usuario1");
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
             builder.Property(x => x.Nome).IsRequired().HasMaxLength(128);
             builder.Property(x => x.Email).IsRequired().HasMaxLength(128);
 
-            builder.Property(x => x.Criado_em).IsRequired().HasDefaultValue(DateTime.Now);
+            //builder.Property(x => x.Criado_em).IsRequired().HasColumnType("timestamp").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            builder.Property(x => x.Criado_em)
+                .IsRequired()
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp with time zone");
         }
     }
 }

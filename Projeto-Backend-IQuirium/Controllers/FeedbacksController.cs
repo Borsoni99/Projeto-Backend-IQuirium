@@ -49,7 +49,6 @@ namespace Projeto_Backend_IQuirium.Controllers
             // Verificar se os usuários existem (remetente e destinatário)
             var remetente = await _context.Usuarios.FindAsync(feedbackDTO.Id_usuario);
             var destinatario = await _context.Usuarios.FindAsync(feedbackDTO.Id_destinatario);
-
             if (remetente == null || destinatario == null)
             {
                 return BadRequest("Usuário remetente ou destinatário inválido.");
@@ -62,13 +61,14 @@ namespace Projeto_Backend_IQuirium.Controllers
                 Id_destinatario = feedbackDTO.Id_destinatario,
                 Tipo_feedback = feedbackDTO.Tipo_feedback,
                 Conteudo = feedbackDTO.Conteudo,
-                Criado_em = DateTime.Now
+                Criado_em = DateTime.UtcNow
             };
-
             _context.Feedbacks.Add(novoFeedback);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetFeedback), new { id = novoFeedback.Id }, novoFeedback);
+     
+            return Ok(novoFeedback);
+            //return CreatedAtAction(nameof(GetFeedback), new { id = novoFeedback.Id }, novoFeedback);
         }
 
         [HttpDelete("{id}")]
