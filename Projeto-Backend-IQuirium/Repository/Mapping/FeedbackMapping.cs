@@ -5,18 +5,20 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Projeto_Backend_IQuirium.Repository.Mapping
 {
-    public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
+    public class FeedbackMapping : IEntityTypeConfiguration<Feedback>
     {
-        public void Configure(EntityTypeBuilder<Usuario> builder)
+        public void Configure(EntityTypeBuilder<Feedback> builder)
         {
-            builder.ToTable("usuario");
+            builder.ToTable("feedback");
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Nome).IsRequired().HasMaxLength(128);
-            builder.Property(x => x.Email).IsRequired().HasMaxLength(128);
-
+            builder.Property(x => x.Tipo_feedback);
+            builder.Property(x => x.Conteudo).IsRequired().HasMaxLength(2048);
             builder.Property(x => x.Criado_em).IsRequired().HasDefaultValue(DateTime.Now);
+
+            builder.HasOne(f => f.Usuario).WithMany().HasForeignKey(f => f.Id_usuario);
+            builder.HasOne(f => f.Destinatario).WithMany().HasForeignKey(f => f.Id_destinatario);
         }
     }
 }
