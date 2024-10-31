@@ -36,7 +36,13 @@ namespace Projeto_Backend_IQuirium.Migrations
                     b.Property<DateTime>("Criado_em")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 10, 29, 23, 29, 15, 691, DateTimeKind.Local).AddTicks(2211));
+                        .HasDefaultValue(new DateTime(2024, 10, 30, 22, 23, 54, 545, DateTimeKind.Local).AddTicks(7580));
+
+                    b.Property<Guid>("DestinatarioId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id_destinatario")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("Id_usuario")
                         .HasColumnType("uuid");
@@ -45,6 +51,8 @@ namespace Projeto_Backend_IQuirium.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DestinatarioId");
 
                     b.HasIndex("Id_usuario");
 
@@ -60,7 +68,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                     b.Property<DateTime>("Atualizado_em")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2024, 10, 29, 23, 29, 15, 691, DateTimeKind.Local).AddTicks(3994));
+                        .HasDefaultValue(new DateTime(2024, 10, 30, 22, 23, 54, 545, DateTimeKind.Local).AddTicks(9511));
 
                     b.Property<Guid>("Id_feedback")
                         .HasColumnType("uuid");
@@ -86,7 +94,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("10/29/2024 23:29:15");
+                        .HasDefaultValue("10/30/2024 22:23:54");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -105,11 +113,19 @@ namespace Projeto_Backend_IQuirium.Migrations
 
             modelBuilder.Entity("Projeto_Backend_IQuirium.Model.Feedback", b =>
                 {
+                    b.HasOne("Projeto_Backend_IQuirium.Model.Usuario", "Destinatario")
+                        .WithMany()
+                        .HasForeignKey("DestinatarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Projeto_Backend_IQuirium.Model.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("Id_usuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Destinatario");
 
                     b.Navigation("Usuario");
                 });

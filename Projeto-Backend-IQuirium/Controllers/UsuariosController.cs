@@ -16,96 +16,67 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        // GET: api/Usuarios
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        [HttpGet("{idOrNome}")]
+        public async Task<IActionResult> GetUsuario(string idOrNome)
         {
-            return Ok(await _context.Usuarios.ToListAsync());
-        }
-
-        // GET: api/Usuarios/Details/5
-        [HttpGet("Details/{id}")]
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
+            // Verificar se o parâmetro é um ID (Guid) ou nome
+            if (Guid.TryParse(idOrNome, out var id))
             {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(usuario);
-        }
-
-        // POST: api/Usuarios/Create
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
-        {
-            if (ModelState.IsValid)
-            {
-                usuario.Id = Guid.NewGuid();
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(Details), new { id = usuario.Id }, usuario);
-            }
-            return BadRequest(ModelState);
-        }
-
-        // PUT: api/Usuarios/Edit/5
-        [HttpPut("Edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
-        {
-            if (id != usuario.Id)
-            {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                // Obter usuário por ID
+                var usuario = await _context.Usuarios.FindAsync(id);
+                if (usuario == null)
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    return NotFound("Usuário não encontrado.");
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UsuarioExists(usuario.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return NoContent();
+                return Ok(usuario);
             }
-            return BadRequest(ModelState);
+            else
+            {
+                // Obter usuário por nome
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Nome == idOrNome);
+                if (usuario == null)
+                {
+                    return NotFound("Usuário não encontrado.");
+                }
+                return Ok(usuario);
+            }
         }
 
-        // DELETE: api/Usuarios/Delete/5
-        [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPost]
+        public async Task<IActionResult> PostUsuario([FromBody] CriarUsuarioDTO usuarioDTO)
+        {
+            // Criar o novo usuário
+            var novoUsuario = new Usuario
+            {
+                Nome = usuarioDTO.Nome,
+                Email = usuarioDTO.Email,
+                Criado_em = DateTime.Now
+            };
+
+            _context.Usuarios.Add(novoUsuario);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUsuario), new { id = novoUsuario.Id }, novoUsuario);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(Guid id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
-                return NotFound();
+                return NotFound("Usuário não encontrado.");
             }
 
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return NoContent();
         }
+    }
 
-        private bool UsuarioExists(Guid id)
-        {
-            return _context.Usuarios.Any(e => e.Id == id);
-        }
+    public class CriarUsuarioDTO
+    {
+        public string Nome { get; set; }
+        public string Email { get; set; }
     }
 }

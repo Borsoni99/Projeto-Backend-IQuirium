@@ -16,27 +16,35 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        [HttpGet("SolicitarFeedback/{id}")]
-        public async Task<IActionResult> SolicitarFeedback(Guid id)
+        [HttpGet("SolicitarFeedback/{idOrNome}")]
+        public async Task<IActionResult> GetFeedback(string idOrNome)
         {
-            // Verificar se o usuário existe
-            var usuario = await _context.Usuarios.FindAsync(id);
-
-            if (usuario == null)
+            // Verificar se o parâmetro é um ID (Guid) ou nome
+            if (Guid.TryParse(idOrNome, out var id))
             {
-                return NotFound("Usuário não encontrado.");
+                // Obter feedback por ID
+                var feedback = await _context.Feedbacks.FindAsync(id);
+                if (feedback == null)
+                {
+                    return NotFound("Feedback não encontrado.");
+                }
+                return Ok(feedback);
             }
-
-            // Obter todos os feedbacks do usuário
-            var feedbacks = await _context.Feedbacks
-                .Where(f => f.Id_usuario == id || f.Id_destinatario == id)
-                .ToListAsync();
-
-            return Ok(feedbacks);
+            else
+            {
+                // Obter feedback por nome do usuário
+                var feedback = await _context.Feedbacks
+                    .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome || f.Destinatario.Nome == idOrNome);
+                if (feedback == null)
+                {
+                    return NotFound("Feedback não encontrado.");
+                }
+                return Ok(feedback);
+            }
         }
 
         [HttpPost("EnviarFeedback")]
-        public async Task<IActionResult> EnviarFeedback([FromBody] EnviarFeedbackDTO feedbackDTO)
+        public async Task<IActionResult> PostFeedback([FromBody] EnviarFeedbackDTO feedbackDTO)
         {
             // Verificar se os usuários existem (remetente e destinatário)
             var remetente = await _context.Usuarios.FindAsync(feedbackDTO.Id_usuario);
@@ -60,7 +68,21 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context.Feedbacks.Add(novoFeedback);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(EnviarFeedback), new { id = novoFeedback.Id }, novoFeedback);
+            return CreatedAtAction(nameof(GetFeedback), new { id = novoFeedback.Id }, novoFeedback);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFeedback(Guid id)
+        {
+            var feedback = await _context.Feedbacks.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound("Feedback não encontrado.");
+            }
+
+            _context.Feedbacks.Remove(feedback);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 

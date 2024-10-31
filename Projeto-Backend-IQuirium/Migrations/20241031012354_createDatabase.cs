@@ -18,7 +18,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Nome = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Email = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Criado_em = table.Column<string>(type: "text", nullable: false, defaultValue: "10/29/2024 23:29:15")
+                    Criado_em = table.Column<string>(type: "text", nullable: false, defaultValue: "10/30/2024 22:23:54")
                 },
                 constraints: table =>
                 {
@@ -32,12 +32,20 @@ namespace Projeto_Backend_IQuirium.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Id_usuario = table.Column<Guid>(type: "uuid", nullable: false),
                     Tipo_feedback = table.Column<int>(type: "integer", nullable: false),
+                    Id_destinatario = table.Column<Guid>(type: "uuid", nullable: false),
                     Conteudo = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: false),
-                    Criado_em = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 10, 29, 23, 29, 15, 691, DateTimeKind.Local).AddTicks(2211))
+                    Criado_em = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 10, 30, 22, 23, 54, 545, DateTimeKind.Local).AddTicks(7580)),
+                    DestinatarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_feedback", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_feedback_usuario_DestinatarioId",
+                        column: x => x.DestinatarioId,
+                        principalTable: "usuario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_feedback_usuario_Id_usuario",
                         column: x => x.Id_usuario,
@@ -53,7 +61,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Id_feedback = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
-                    Atualizado_em = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 10, 29, 23, 29, 15, 691, DateTimeKind.Local).AddTicks(3994))
+                    Atualizado_em = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2024, 10, 30, 22, 23, 54, 545, DateTimeKind.Local).AddTicks(9511))
                 },
                 constraints: table =>
                 {
@@ -65,6 +73,11 @@ namespace Projeto_Backend_IQuirium.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_feedback_DestinatarioId",
+                table: "feedback",
+                column: "DestinatarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_feedback_Id_usuario",
