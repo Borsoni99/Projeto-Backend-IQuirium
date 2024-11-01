@@ -12,7 +12,7 @@ using Projeto_Backend_IQuirium.Repository;
 namespace Projeto_Backend_IQuirium.Migrations
 {
     [DbContext(typeof(ProjetoBackendIQuiriumContext))]
-    [Migration("20241031035518_InitialCreate")]
+    [Migration("20241101034846_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
