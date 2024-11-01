@@ -1,7 +1,7 @@
 # Documentação do Projeto - Sistema de Feedback para a Plataforma IQuirium
 
 ## Resumo do Projeto
-Este projeto foi desenvolvido por cinco alunos do curso de Sistemas de Informação da Faculdade IBMEC, em parceria com a empresa IQuirium. O objetivo do projeto é criar uma solução para capturar e gerenciar feedbacks dos usuários da plataforma IQuirium, tanto sobre o produto quanto entre os usuários, visando promover o desenvolvimento contínuo da plataforma e o autodesenvolvimento dos usuários.
+Este projeto foi desenvolvido por cinco alunos dos cursos de T.I da Faculdade IBMEC, em parceria com a empresa IQuirium. O objetivo do projeto é criar uma solução para capturar e gerenciar feedbacks dos usuários da plataforma IQuirium, tanto sobre o produto quanto entre os usuários, visando promover o desenvolvimento contínuo da plataforma e o autodesenvolvimento dos usuários.
 
 ## Equipe do Projeto
 - **Alunos**:João Victor Campelo, Thiago Novaes, Bernardo Pinto, Daniel Lloyd, Marceu Filho
