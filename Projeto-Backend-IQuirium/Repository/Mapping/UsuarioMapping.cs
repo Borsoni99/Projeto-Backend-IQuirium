@@ -9,7 +9,7 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
     {
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
-            builder.ToTable("usuario1");
+            builder.ToTable("usuario");
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Id).ValueGeneratedOnAdd();
 

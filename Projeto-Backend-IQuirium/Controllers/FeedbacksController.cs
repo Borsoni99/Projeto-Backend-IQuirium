@@ -29,7 +29,7 @@ namespace Projeto_Backend_IQuirium.Controllers
             {
                 var feedback = await _context.Feedbacks
                     .Include(f => f.Usuario)
-                    .Include(f => f.Destinatario)
+                    //.Include(f => f.Destinatario)
                     .FirstOrDefaultAsync(f => f.Id == id);
 
                 if (feedback == null)
@@ -42,8 +42,8 @@ namespace Projeto_Backend_IQuirium.Controllers
             {
                 var feedback = await _context.Feedbacks
                     .Include(f => f.Usuario)
-                    .Include(f => f.Destinatario)
-                    .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome || f.Destinatario.Nome == idOrNome);
+                    //.Include(f => f.Destinatario)
+                    .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome /*|| f.Destinatario.Nome == idOrNome*/);
 
                 if (feedback == null)
                 {
@@ -61,32 +61,32 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (feedbackDTO.Id_usuario == feedbackDTO.Id_destinatario)
+            /*if (feedbackDTO.Id_usuario == feedbackDTO.Id_destinatario)
             {
                 return BadRequest("Usuário não pode enviar feedback para si mesmo.");
-            }
+            }*/
 
             // Verificar se os usuários existem (remetente e destinatário)
             var remetente = await _context.Usuarios.FindAsync(feedbackDTO.Id_usuario);
-            var destinatario = await _context.Usuarios.FindAsync(feedbackDTO.Id_destinatario);
+            //var destinatario = await _context.Usuarios.FindAsync(feedbackDTO.Id_destinatario);
 
             if (remetente == null)
             {
                 return BadRequest("Usuário remetente não encontrado.");
             }
 
-            if (destinatario == null)
+            /*if (destinatario == null)
             {
                 return BadRequest("Usuário destinatário não encontrado.");
-            }
+            }*/
 
             // Criar o novo feedback
             var novoFeedback = new Feedback
             {
                 Id_usuario = feedbackDTO.Id_usuario,
                 Usuario = remetente,  
-                Id_destinatario = feedbackDTO.Id_destinatario,
-                Destinatario = destinatario,  
+                //Id_destinatario = feedbackDTO.Id_destinatario,
+                //Destinatario = destinatario,  
                 Tipo_feedback = feedbackDTO.Tipo_feedback,
                 Conteudo = feedbackDTO.Conteudo,
                 Criado_em = DateTime.UtcNow
@@ -100,9 +100,9 @@ namespace Projeto_Backend_IQuirium.Controllers
                 .Reference(f => f.Usuario)
                 .LoadAsync();
 
-            await _context.Entry(novoFeedback)
-                .Reference(f => f.Destinatario)
-                .LoadAsync();
+            //await _context.Entry(novoFeedback)
+            //    .Reference(f => f.Destinatario)
+            //    .LoadAsync();
 
             return Ok(novoFeedback);
         }
@@ -132,8 +132,8 @@ namespace Projeto_Backend_IQuirium.Controllers
         [Required(ErrorMessage = "ID do usuário é obrigatório")]
         public Guid Id_usuario { get; set; }
 
-        [Required(ErrorMessage = "ID do destinatário é obrigatório")]
-        public Guid Id_destinatario { get; set; }
+        //[Required(ErrorMessage = "ID do destinatário é obrigatório")]
+        //public Guid Id_destinatario { get; set; }
 
         [Required(ErrorMessage = "Tipo de feedback é obrigatório")]
         public TipoFeedbackEnum Tipo_feedback { get; set; }

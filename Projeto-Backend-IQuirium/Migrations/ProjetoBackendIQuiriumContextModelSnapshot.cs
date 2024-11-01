@@ -38,9 +38,6 @@ namespace Projeto_Backend_IQuirium.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<Guid>("Id_destinatario")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("Id_usuario")
                         .HasColumnType("uuid");
 
@@ -49,11 +46,9 @@ namespace Projeto_Backend_IQuirium.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id_destinatario");
-
                     b.HasIndex("Id_usuario");
 
-                    b.ToTable("feedback1", (string)null);
+                    b.ToTable("feedback", (string)null);
                 });
 
             modelBuilder.Entity("Projeto_Backend_IQuirium.Model.Usuario", b =>
@@ -79,24 +74,16 @@ namespace Projeto_Backend_IQuirium.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("usuario1", (string)null);
+                    b.ToTable("usuario", (string)null);
                 });
 
             modelBuilder.Entity("Projeto_Backend_IQuirium.Model.Feedback", b =>
                 {
-                    b.HasOne("Projeto_Backend_IQuirium.Model.Usuario", "Destinatario")
-                        .WithMany()
-                        .HasForeignKey("Id_destinatario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Projeto_Backend_IQuirium.Model.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("Id_usuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Destinatario");
 
                     b.Navigation("Usuario");
                 });
