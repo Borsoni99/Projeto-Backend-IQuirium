@@ -94,6 +94,35 @@ Facilitar a troca de avaliações construtivas entre os usuários, promovendo o 
 ## Diagrama de caso de uso
 ![image](https://github.com/user-attachments/assets/f4996cbe-75dc-4675-b388-dd74bf82cc97)
 
+---
+## Diagrama de Sequência - Registro de Usuário
+![Diagrama de Sequência - Registro de Usuário](https://github.com/user-attachments/assets/a98e9341-16bb-4643-8475-0b2bcf611b14)
+
+---
+## Diagrama de Sequência - Reportar Feedback Inapropriado
+![Diagrama de Sequência - Reportar Feedback Inapropriado](https://github.com/user-attachments/assets/ffead89e-b597-423e-b028-b1400f6af9f7)
+
+---
+## Diagrama de Sequência - Revisão de Feedback Reportado pelo Administrador
+![Diagrama de Sequência - Revisão de Feedback Reportado pelo Administrador](https://github.com/user-attachments/assets/9d741316-37a3-44b6-99e9-f295f3fd2519)
+
+---
+## Diagrama de Sequência - Solicitação de Feedback Entre Usuários
+![Diagrama de Sequência - Solicitação de Feedback Entre Usuários](https://github.com/user-attachments/assets/2b2a60de-77d4-4cb6-92d6-90474e8125ff)
+
+---
+## Diagrama de Sequência - Envio de Feedback Entre Usuários
+![Diagrama de Sequência - Envio de Feedback do Produto](https://github.com/user-attachments/assets/74d8dc40-a92a-479e-a4b9-a4b29bdcdc46)
+
+---
+## Diagrama de Sequência - Envio de Feedback do Produto
+![Diagrama de Sequência - Envio de Feedback do Produto](https://github.com/user-attachments/assets/4306149e-20d6-4bb4-a951-3164e133bcc3)
+
+---
 ## Diagrama de Sequência - Visualização do Histórico de Feedback
 ![Diagrama de Sequência - Visualização do Histórico de Feedback](https://github.com/user-attachments/assets/04af0a52-03c4-46c2-b47e-7781b051fe58)
+
+
+
+
 
