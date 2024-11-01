@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Projeto_Backend_IQuirium.Model;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Projeto_Backend_IQuirium.Repository.Mapping
 {
@@ -14,10 +15,15 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
 
             builder.Property(x => x.Tipo_feedback);
             builder.Property(x => x.Conteudo).IsRequired().HasMaxLength(2048);
-            builder.Property(x => x.Criado_em).IsRequired().HasDefaultValue(DateTime.Now);
+            //budorilder.Property(x => x.Criado_em).IsRequired().HasColumnType("timestamp").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            builder.Property(x => x.Criado_em)
+                .IsRequired()
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp with time zone");
 
             builder.HasOne(f => f.Usuario).WithMany().HasForeignKey(f => f.Id_usuario);
-
+            //builder.HasOne(f => f.Destinatario).WithMany().HasForeignKey(f => f.Id_destinatario);
         }
     }
 }

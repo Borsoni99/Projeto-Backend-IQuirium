@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
+using System.ComponentModel.DataAnnotations;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
-    public class FeedbacksController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class FeedbacksController : ControllerBase
     {
         private readonly ProjetoBackendIQuiriumContext _context;
 
@@ -15,147 +17,129 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        // GET: Feedbacks
-        public async Task<IActionResult> Index()
+        [HttpGet("SolicitarFeedback/{idOrNome}")]
+        public async Task<IActionResult> GetFeedback(string idOrNome)
         {
-            var projetoBackendIQuiriumContext = _context.Feedbacks.Include(f => f.Usuario);
-            return View(await projetoBackendIQuiriumContext.ToListAsync());
-        }
-
-        // GET: Feedbacks/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(idOrNome))
             {
-                return NotFound();
+                return BadRequest("ID ou nome não pode estar vazio.");
             }
 
-            var feedback = await _context.Feedbacks
-                .Include(f => f.Usuario)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (feedback == null)
+            if (Guid.TryParse(idOrNome, out var id))
             {
-                return NotFound();
-            }
+                var feedback = await _context.Feedbacks
+                    .Include(f => f.Usuario)
+                    //.Include(f => f.Destinatario)
+                    .FirstOrDefaultAsync(f => f.Id == id);
 
-            return View(feedback);
-        }
-
-        // GET: Feedbacks/Create
-        public IActionResult Create()
-        {
-            ViewData["Id_usuario"] = new SelectList(_context.Usuarios, "Id", "Criado_em");
-            return View();
-        }
-
-        // POST: Feedbacks/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Id_usuario,Tipo_feedback,Conteudo,Criado_em")] Feedback feedback)
-        {
-            if (ModelState.IsValid)
-            {
-                feedback.Id = Guid.NewGuid();
-                _context.Add(feedback);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["Id_usuario"] = new SelectList(_context.Usuarios, "Id", "Criado_em", feedback.Id_usuario);
-            return View(feedback);
-        }
-
-        // GET: Feedbacks/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var feedback = await _context.Feedbacks.FindAsync(id);
-            if (feedback == null)
-            {
-                return NotFound();
-            }
-            ViewData["Id_usuario"] = new SelectList(_context.Usuarios, "Id", "Criado_em", feedback.Id_usuario);
-            return View(feedback);
-        }
-
-        // POST: Feedbacks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Id_usuario,Tipo_feedback,Conteudo,Criado_em")] Feedback feedback)
-        {
-            if (id != feedback.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (feedback == null)
                 {
-                    _context.Update(feedback);
-                    await _context.SaveChangesAsync();
+                    return NotFound("Feedback não encontrado.");
                 }
-                catch (DbUpdateConcurrencyException)
+                return Ok(feedback);
+            }
+            else
+            {
+                var feedback = await _context.Feedbacks
+                    .Include(f => f.Usuario)
+                    //.Include(f => f.Destinatario)
+                    .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome /*|| f.Destinatario.Nome == idOrNome*/);
+
+                if (feedback == null)
                 {
-                    if (!FeedbackExists(feedback.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound("Feedback não encontrado.");
                 }
-                return RedirectToAction(nameof(Index));
+                return Ok(feedback);
             }
-            ViewData["Id_usuario"] = new SelectList(_context.Usuarios, "Id", "Criado_em", feedback.Id_usuario);
-            return View(feedback);
         }
 
-        // GET: Feedbacks/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        [HttpPost("EnviarFeedback")]
+        public async Task<IActionResult> PostFeedback([FromBody] EnviarFeedbackDTO feedbackDTO)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var feedback = await _context.Feedbacks
-                .Include(f => f.Usuario)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (feedback == null)
+            /*if (feedbackDTO.Id_usuario == feedbackDTO.Id_destinatario)
             {
-                return NotFound();
+                return BadRequest("Usuário não pode enviar feedback para si mesmo.");
+            }*/
+
+            // Verificar se os usuários existem (remetente e destinatário)
+            var remetente = await _context.Usuarios.FindAsync(feedbackDTO.Id_usuario);
+            //var destinatario = await _context.Usuarios.FindAsync(feedbackDTO.Id_destinatario);
+
+            if (remetente == null)
+            {
+                return BadRequest("Usuário remetente não encontrado.");
             }
 
-            return View(feedback);
-        }
-
-        // POST: Feedbacks/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var feedback = await _context.Feedbacks.FindAsync(id);
-            if (feedback != null)
+            /*if (destinatario == null)
             {
-                _context.Feedbacks.Remove(feedback);
-            }
+                return BadRequest("Usuário destinatário não encontrado.");
+            }*/
 
+            // Criar o novo feedback
+            var novoFeedback = new Feedback
+            {
+                Id_usuario = feedbackDTO.Id_usuario,
+                Usuario = remetente,  
+                //Id_destinatario = feedbackDTO.Id_destinatario,
+                //Destinatario = destinatario,  
+                Tipo_feedback = feedbackDTO.Tipo_feedback,
+                Conteudo = feedbackDTO.Conteudo,
+                Criado_em = DateTime.UtcNow
+            };
+
+            _context.Feedbacks.Add(novoFeedback);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+
+            await _context.Entry(novoFeedback)
+                .Reference(f => f.Usuario)
+                .LoadAsync();
+
+            //await _context.Entry(novoFeedback)
+            //    .Reference(f => f.Destinatario)
+            //    .LoadAsync();
+
+            return Ok(novoFeedback);
         }
 
-        private bool FeedbackExists(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFeedback(Guid id)
         {
-            return _context.Feedbacks.Any(e => e.Id == id);
+            if (id == Guid.Empty)
+            {
+                return BadRequest("ID inválido.");
+            }
+
+            var feedback = await _context.Feedbacks.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound("Feedback não encontrado.");
+            }
+
+            _context.Feedbacks.Remove(feedback);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
+    }
+
+    public class EnviarFeedbackDTO
+    {
+        [Required(ErrorMessage = "ID do usuário é obrigatório")]
+        public Guid Id_usuario { get; set; }
+
+        //[Required(ErrorMessage = "ID do destinatário é obrigatório")]
+        //public Guid Id_destinatario { get; set; }
+
+        [Required(ErrorMessage = "Tipo de feedback é obrigatório")]
+        public TipoFeedbackEnum Tipo_feedback { get; set; }
+
+        [Required(ErrorMessage = "Conteúdo é obrigatório")]
+        [StringLength(1000, MinimumLength = 1, ErrorMessage = "Conteúdo deve ter entre 1 e 1000 caracteres")]
+        public string Conteudo { get; set; }
     }
 }

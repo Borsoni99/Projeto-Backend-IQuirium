@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
-    public class UsuariosController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsuariosController : ControllerBase
     {
         private readonly ProjetoBackendIQuiriumContext _context;
 
@@ -14,140 +18,111 @@ namespace Projeto_Backend_IQuirium.Controllers
             _context = context;
         }
 
-        // GET: Usuarios
-        public async Task<IActionResult> Index()
+        [HttpGet("{idOrNome}")]
+        public async Task<IActionResult> GetUsuario(string idOrNome)
         {
-            return View(await _context.Usuarios.ToListAsync());
-        }
-
-        // GET: Usuarios/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(idOrNome))
             {
-                return NotFound();
+                return BadRequest("ID ou nome não pode estar vazio.");
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
+            if (Guid.TryParse(idOrNome, out var id))
             {
-                return NotFound();
-            }
-
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
-        {
-            if (ModelState.IsValid)
-            {
-                usuario.Id = Guid.NewGuid();
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Nome,Email,Criado_em")] Usuario usuario)
-        {
-            if (id != usuario.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                var usuario = await _context.Usuarios.FindAsync(id);
+                if (usuario == null)
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    return NotFound("Usuário não encontrado.");
                 }
-                catch (DbUpdateConcurrencyException)
+                return Ok(usuario);
+            }
+            else
+            {
+                if (idOrNome.Length < 2)
                 {
-                    if (!UsuarioExists(usuario.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return BadRequest("Nome deve ter pelo menos 2 caracteres.");
                 }
-                return RedirectToAction(nameof(Index));
+
+                var usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Nome == idOrNome);
+
+                if (usuario == null)
+                {
+                    return NotFound("Usuário não encontrado.");
+                }
+                return Ok(usuario);
             }
-            return View(usuario);
         }
 
-        // GET: Usuarios/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        [HttpPost]
+        public async Task<IActionResult> PostUsuario([FromBody] CriarUsuarioDTO usuarioDTO)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
+            // Validar se já existe um usuário com o mesmo email
+            var emailExists = await _context.Usuarios
+                .AnyAsync(u => u.Email.ToLower() == usuarioDTO.Email.ToLower());
+            if (emailExists)
             {
-                return NotFound();
+                return BadRequest("Email já está em uso.");
             }
 
-            return View(usuario);
-        }
-
-        // POST: Usuarios/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario != null)
+            // Validar se já existe um usuário com o mesmo nome
+            var nomeExists = await _context.Usuarios
+                .AnyAsync(u => u.Nome.ToLower() == usuarioDTO.Nome.ToLower());
+            if (nomeExists)
             {
-                _context.Usuarios.Remove(usuario);
+                return BadRequest("Nome já está em uso.");
             }
 
+            // Criar o novo usuário
+            var novoUsuario = new Usuario
+            {
+                Nome = usuarioDTO.Nome.Trim(),
+                Email = usuarioDTO.Email.Trim().ToLower(),
+                Criado_em = DateTime.UtcNow
+            };
+
+            _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return CreatedAtAction(nameof(GetUsuario),
+                new { idOrNome = novoUsuario.Id },
+                novoUsuario);
         }
 
-        private bool UsuarioExists(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(Guid id)
         {
-            return _context.Usuarios.Any(e => e.Id == id);
+            if (id == Guid.Empty)
+            {
+                return BadRequest("ID inválido.");
+            }
+
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
+    }
+
+    public class CriarUsuarioDTO
+    {
+        [Required(ErrorMessage = "Nome é obrigatório")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Nome deve ter entre 2 e 100 caracteres")]
+        [RegularExpression(@"^[a-zA-Z0-9\s]*$", ErrorMessage = "Nome deve conter apenas letras, números e espaços")]
+        public string Nome { get; set; }
+
+        [Required(ErrorMessage = "Email é obrigatório")]
+        [EmailAddress(ErrorMessage = "Email inválido")]
+        [StringLength(256, ErrorMessage = "Email não pode ter mais que 256 caracteres")]
+        public string Email { get; set; }
     }
 }
