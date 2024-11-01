@@ -25,7 +25,6 @@ A captura de feedback dos usuários visa otimizar a experiência de uso da plata
 
 #### Requisitos Técnicos
 - **Banco de Dados**: Armazenar os feedbacks com informações como ID do usuário, texto do feedback, categoria, data e hora.
-- **Frontend**: Formulário acessível na plataforma, com confirmação de envio.
 - **Backend**: APIs para receber e armazenar feedbacks de forma segura.
 - **Autenticação**: Apenas usuários autenticados podem enviar feedback.
 
