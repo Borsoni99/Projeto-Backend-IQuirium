@@ -94,3 +94,6 @@ Facilitar a troca de avaliações construtivas entre os usuários, promovendo o 
 ## Diagrama de caso de uso
 ![image](https://github.com/user-attachments/assets/f4996cbe-75dc-4675-b388-dd74bf82cc97)
 
+## Diagrama de Sequência - Visualização do Histórico de Feedback
+![Diagrama de Sequência - Visualização do Histórico de Feedback](https://github.com/user-attachments/assets/04af0a52-03c4-46c2-b47e-7781b051fe58)
+
