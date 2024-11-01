@@ -52,7 +52,6 @@ Facilitar a troca de avaliações construtivas entre os usuários, promovendo o 
 
 #### Requisitos Técnicos
 - **Banco de Dados**: Armazenar feedbacks trocados entre os usuários e logs de reports de feedbacks.
-- **Frontend**: Interface para envio e recebimento de feedbacks, com opção de reportar conteúdos ofensivos.
 - **Backend**: APIs para gerenciamento de feedbacks e moderação de conteúdo reportado.
 - **Autenticação e Autorização**: Apenas usuários autenticados podem trocar feedbacks.
 
