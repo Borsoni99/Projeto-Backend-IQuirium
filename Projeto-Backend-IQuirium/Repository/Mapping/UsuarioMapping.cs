@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Projeto_Backend_IQuirium.Model;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Projeto_Backend_IQuirium.Repository.Mapping
 {
@@ -10,18 +9,25 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
             builder.ToTable("usuario");
-            builder.HasKey(e => e.Id);
-            builder.Property(e => e.Id).ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Nome).IsRequired().HasMaxLength(128);
-            builder.Property(x => x.Email).IsRequired().HasMaxLength(128);
+            // Chave primária
+            builder.HasKey(u => u.Id);
+            builder.Property(u => u.Id).ValueGeneratedOnAdd();
 
-            //builder.Property(x => x.Criado_em).IsRequired().HasColumnType("timestamp").HasDefaultValueSql("CURRENT_TIMESTAMP");
-            builder.Property(x => x.Criado_em)
+            // Propriedades
+            builder.Property(u => u.Nome)
                 .IsRequired()
-                .ValueGeneratedOnAdd()
+                .HasMaxLength(255);
+
+            builder.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            builder.Property(u => u.Criado_em)
+                .IsRequired()
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp with time zone");
+
         }
     }
 }

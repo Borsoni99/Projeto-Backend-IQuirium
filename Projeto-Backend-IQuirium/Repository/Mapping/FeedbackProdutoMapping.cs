@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Projeto_Backend_IQuirium.Repository.Mapping
 {
-    public class FeedbackMapping : IEntityTypeConfiguration<Feedback>
+    public class FeedbackProdutoMapping : IEntityTypeConfiguration<FeedbackProduto>
     {
-        public void Configure(EntityTypeBuilder<Feedback> builder)
+        public void Configure(EntityTypeBuilder<FeedbackProduto> builder)
         {
             builder.ToTable("feedback");
             builder.HasKey(e => e.Id);
@@ -15,7 +15,6 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
 
             builder.Property(x => x.Tipo_feedback);
             builder.Property(x => x.Conteudo).IsRequired().HasMaxLength(2048);
-            //budorilder.Property(x => x.Criado_em).IsRequired().HasColumnType("timestamp").HasDefaultValueSql("CURRENT_TIMESTAMP");
             builder.Property(x => x.Criado_em)
                 .IsRequired()
                 .ValueGeneratedOnAdd()
@@ -23,7 +22,6 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
                 .HasColumnType("timestamp with time zone");
 
             builder.HasOne(f => f.Usuario).WithMany().HasForeignKey(f => f.Id_usuario);
-            //builder.HasOne(f => f.Destinatario).WithMany().HasForeignKey(f => f.Id_destinatario);
         }
     }
 }
