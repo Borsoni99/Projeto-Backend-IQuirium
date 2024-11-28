@@ -16,7 +16,7 @@ namespace Projeto_Backend_IQuirium.Controllers
         {
             _context = context;
         }
-
+        
         /// <summary>
         /// Obter feedbacks de um usuário (por ID ou Nome)
         /// </summary>
