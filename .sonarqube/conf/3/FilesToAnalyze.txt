@@ -8,4 +8,7 @@ C:\Users\filho\.nuget\packages\xunit.runner.visualstudio\2.5.6\build\net6.0\xuni
 C:\Users\filho\.nuget\packages\xunit.runner.visualstudio\2.5.6\build\net6.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\filho\.nuget\packages\xunit.runner.visualstudio\2.5.6\build\net6.0\xunit.runner.utility.netcoreapp10.dll
 C:\Users\filho\source\repos\Borsoni99\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium.Tests\TestResults\0c372f77-31e0-419e-a439-01876479b8a6\coverage.cobertura.xml
+C:\Users\filho\source\repos\Borsoni99\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium.Tests\TestResults\1f19fe01-46ee-4958-831e-ae1a1913e38f\coverage.cobertura.xml
+C:\Users\filho\source\repos\Borsoni99\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium.Tests\TestResults\cd02069d-adb8-407c-919b-f179f09411b5\coverage.cobertura.xml
 C:\Users\filho\source\repos\Borsoni99\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium.Tests\TestResults\coverage.opencover.xml
+C:\Users\filho\source\repos\Borsoni99\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium.Tests\TestResults\f3b2ab28-b096-4285-9356-662dfceddb5d\coverage.cobertura.xml

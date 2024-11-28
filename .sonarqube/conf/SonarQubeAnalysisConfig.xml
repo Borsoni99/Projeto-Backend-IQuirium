@@ -140,6 +140,7 @@
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZNxITiuaUlw_Ly_MIu0</Property>
     <Property Name="sonar.core.startTime">28/11/2024 02:09:28</Property>
+    <Property Name="sonar.coverage.exclusions">Projeto-Backend-IQuirium/Migrations/</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>

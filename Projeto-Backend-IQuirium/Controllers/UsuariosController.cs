@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
+using Newtonsoft.Json;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
@@ -118,11 +119,13 @@ namespace Projeto_Backend_IQuirium.Controllers
         [Required(ErrorMessage = "Nome é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Nome deve ter entre 2 e 100 caracteres")]
         [RegularExpression(@"^[a-zA-Z0-9\s]*$", ErrorMessage = "Nome deve conter apenas letras, números e espaços")]
+        [JsonRequired]
         public string Nome { get; set; }
 
         [Required(ErrorMessage = "Email é obrigatório")]
         [EmailAddress(ErrorMessage = "Email inválido")]
         [StringLength(256, ErrorMessage = "Email não pode ter mais que 256 caracteres")]
+        [JsonRequired]
         public string Email { get; set; }
     }
 }
