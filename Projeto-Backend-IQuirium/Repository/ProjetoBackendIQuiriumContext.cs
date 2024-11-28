@@ -10,13 +10,15 @@ namespace Projeto_Backend_IQuirium.Repository
             : base(options) { }
 
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<FeedbackProduto> FeedbacksProdutos { get; set; }
+        public DbSet<FeedbackUsuario> FeedbacksUsuarios { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UsuarioMapping());
-            modelBuilder.ApplyConfiguration(new FeedbackMapping());
+            modelBuilder.ApplyConfiguration(new FeedbackProdutoMapping());
+            modelBuilder.ApplyConfiguration(new FeedbackUsuarioMapping());
 
             base.OnModelCreating(modelBuilder);
         }

@@ -2,8 +2,8 @@
 {
     public enum TipoFeedbackEnum
     {
-        Sugestao = 1,
-        Comentario = 2,
-        RelatoDeErro = 3
+        Sugestao,
+        Comentario,
+        RelatoDeErro
     }
 }
