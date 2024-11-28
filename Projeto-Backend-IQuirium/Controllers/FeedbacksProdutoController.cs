@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Projeto_Backend_IQuirium.Interfaces;
 using Projeto_Backend_IQuirium.Model;
-using Projeto_Backend_IQuirium.Repository;
 using System.ComponentModel.DataAnnotations;
 
 namespace Projeto_Backend_IQuirium.Controllers
@@ -10,11 +9,11 @@ namespace Projeto_Backend_IQuirium.Controllers
     [Route("api/[controller]")]
     public class FeedbacksProdutoController : ControllerBase
     {
-        private readonly ProjetoBackendIQuiriumContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public FeedbacksProdutoController(ProjetoBackendIQuiriumContext context)
+        public FeedbacksProdutoController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("SolicitarFeedback/{idOrNome}")]
@@ -27,10 +26,7 @@ namespace Projeto_Backend_IQuirium.Controllers
 
             if (Guid.TryParse(idOrNome, out var id))
             {
-                var feedback = await _context.FeedbacksProdutos
-                    .Include(f => f.Usuario)
-                    .FirstOrDefaultAsync(f => f.Id == id);
-
+                var feedback = await _unitOfWork.FeedbackProdutos.GetByIdAsync(id);
                 if (feedback == null)
                 {
                     return NotFound("Feedback não encontrado.");
@@ -39,10 +35,8 @@ namespace Projeto_Backend_IQuirium.Controllers
             }
             else
             {
-                var feedback = await _context.FeedbacksProdutos
-                    .Include(f => f.Usuario)
-                    .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome);
-
+                var feedbacks = await _unitOfWork.FeedbackProdutos.FindAsync(f => f.Usuario.Nome == idOrNome);
+                var feedback = feedbacks.FirstOrDefault();
                 if (feedback == null)
                 {
                     return NotFound("Feedback não encontrado.");
@@ -59,31 +53,16 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Verificar se os usuários existem (remetente e destinatário)
-            var remetente = await _context.Usuarios.FindAsync(feedbackDTO.Id_usuario);
-
-            if (remetente == null)
-            {
-                return BadRequest("Usuário remetente não encontrado.");
-            }
-
-            // Criar o novo feedback
             var novoFeedback = new FeedbackProduto
             {
                 Id_usuario = feedbackDTO.Id_usuario,
-                Usuario = remetente,   
                 Tipo_feedback = feedbackDTO.Tipo_feedback,
                 Conteudo = feedbackDTO.Conteudo,
                 Criado_em = DateTime.UtcNow
             };
 
-            _context.FeedbacksProdutos.Add(novoFeedback);
-            await _context.SaveChangesAsync();
-
-
-            await _context.Entry(novoFeedback)
-                .Reference(f => f.Usuario)
-                .LoadAsync();
+            await _unitOfWork.FeedbackProdutos.AddAsync(novoFeedback);
+            await _unitOfWork.SaveChangesAsync();
 
             return Ok(novoFeedback);
         }
@@ -96,14 +75,14 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest("ID inválido.");
             }
 
-            var feedback = await _context.FeedbacksProdutos.FindAsync(id);
+            var feedback = await _unitOfWork.FeedbackProdutos.GetByIdAsync(id);
             if (feedback == null)
             {
                 return NotFound("Feedback não encontrado.");
             }
 
-            _context.FeedbacksProdutos.Remove(feedback);
-            await _context.SaveChangesAsync();
+            _unitOfWork.FeedbackProdutos.Delete(feedback);
+            await _unitOfWork.SaveChangesAsync();
             return NoContent();
         }
     }
