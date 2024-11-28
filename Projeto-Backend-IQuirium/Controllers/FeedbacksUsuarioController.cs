@@ -132,7 +132,7 @@ namespace Projeto_Backend_IQuirium.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Feedback reportado com sucesso." });
+            return Ok(new { Message = "Feedback reportado com sucesso. " });
         }
 
         /// <summary>
