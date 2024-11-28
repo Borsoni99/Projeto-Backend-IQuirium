@@ -27,7 +27,7 @@ namespace Projeto_Backend_IQuirium.Controllers
 
             if (Guid.TryParse(idOrNome, out var id))
             {
-                var feedback = await _context.FeedbacksProduto
+                var feedback = await _context.FeedbacksProdutos
                     .Include(f => f.Usuario)
                     .FirstOrDefaultAsync(f => f.Id == id);
 
@@ -39,7 +39,7 @@ namespace Projeto_Backend_IQuirium.Controllers
             }
             else
             {
-                var feedback = await _context.FeedbacksProduto
+                var feedback = await _context.FeedbacksProdutos
                     .Include(f => f.Usuario)
                     .FirstOrDefaultAsync(f => f.Usuario.Nome == idOrNome);
 
@@ -77,7 +77,7 @@ namespace Projeto_Backend_IQuirium.Controllers
                 Criado_em = DateTime.UtcNow
             };
 
-            _context.FeedbacksProduto.Add(novoFeedback);
+            _context.FeedbacksProdutos.Add(novoFeedback);
             await _context.SaveChangesAsync();
 
 
@@ -96,13 +96,13 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest("ID inválido.");
             }
 
-            var feedback = await _context.FeedbacksProduto.FindAsync(id);
+            var feedback = await _context.FeedbacksProdutos.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound("Feedback não encontrado.");
             }
 
-            _context.FeedbacksProduto.Remove(feedback);
+            _context.FeedbacksProdutos.Remove(feedback);
             await _context.SaveChangesAsync();
             return NoContent();
         }

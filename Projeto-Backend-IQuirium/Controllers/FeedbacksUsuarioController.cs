@@ -30,7 +30,7 @@ namespace Projeto_Backend_IQuirium.Controllers
 
             if (Guid.TryParse(idOrNome, out var id))
             {
-                var feedback = await _context.FeedbacksUsuario
+                var feedback = await _context.FeedbacksUsuarios
                     .Include(f => f.Remetente)
                     .Include(f => f.Destinatario)
                     .FirstOrDefaultAsync(f => f.Id == id);
@@ -43,7 +43,7 @@ namespace Projeto_Backend_IQuirium.Controllers
             }
             else
             {
-                var feedback = await _context.FeedbacksUsuario
+                var feedback = await _context.FeedbacksUsuarios
                     .Include(f => f.Remetente)
                     .Include(f => f.Destinatario)
                     .FirstOrDefaultAsync(f => f.Destinatario.Nome == idOrNome);
@@ -93,7 +93,7 @@ namespace Projeto_Backend_IQuirium.Controllers
                 Status = StatusFeedbackEnum.Pendente
             };
 
-            _context.FeedbacksUsuario.Add(novoFeedback);
+            _context.FeedbacksUsuarios.Add(novoFeedback);
             await _context.SaveChangesAsync();
 
             // Carregar dados do remetente e destinatário para o retorno
@@ -119,7 +119,7 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest(ModelState);
             }
 
-            var feedback = await _context.FeedbacksUsuario.FindAsync(id);
+            var feedback = await _context.FeedbacksUsuarios.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound("Feedback não encontrado.");
@@ -146,13 +146,13 @@ namespace Projeto_Backend_IQuirium.Controllers
                 return BadRequest("ID inválido.");
             }
 
-            var feedback = await _context.FeedbacksUsuario.FindAsync(id);
+            var feedback = await _context.FeedbacksUsuarios.FindAsync(id);
             if (feedback == null)
             {
                 return NotFound("Feedback não encontrado.");
             }
 
-            _context.FeedbacksUsuario.Remove(feedback);
+            _context.FeedbacksUsuarios.Remove(feedback);
             await _context.SaveChangesAsync();
             return NoContent();
         }

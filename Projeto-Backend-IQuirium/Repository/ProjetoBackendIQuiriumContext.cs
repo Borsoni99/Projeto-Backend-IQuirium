@@ -10,8 +10,8 @@ namespace Projeto_Backend_IQuirium.Repository
             : base(options) { }
 
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<FeedbackProduto> FeedbacksProduto { get; set; }
-        public DbSet<FeedbackUsuario> FeedbacksUsuario { get; set; }
+        public DbSet<FeedbackProduto> FeedbacksProdutos { get; set; }
+        public DbSet<FeedbackUsuario> FeedbacksUsuarios { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
