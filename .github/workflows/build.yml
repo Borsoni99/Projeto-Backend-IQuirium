@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: Build and analyze
+    name: Build, Test, and Analyze
     runs-on: windows-latest
     steps:
       - name: Set up JDK 17
@@ -38,12 +38,20 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
+      - name: Build, Test, and Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Borsoni99_Projeto-Backend-IQuirium" /o:"borsoni99" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="Projeto-Backend-IQuirium/Migrations/**"
+          # Iniciar a análise do SonarQube
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Borsoni99_Projeto-Backend-IQuirium" /o:"borsoni99" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="Projeto-Backend-IQuirium/Migrations/**" /d:sonar.cs.opencover.reportsPaths="$(pwd)/coverage.opencover.xml"
+          
+          # Build do projeto
           dotnet build
+          
+          # Executar os testes com cobertura
+          dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(pwd)/coverage.opencover.xml
+          
+          # Finalizar a análise do SonarQube
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
