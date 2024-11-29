@@ -31,7 +31,8 @@ namespace Projeto_Backend_IQuirium.Repository.Mapping
                 .HasMaxLength(255);
 
             builder.Property(f => f.Motivo)
-                .HasMaxLength(1024);
+                .HasMaxLength(1024)
+                .IsRequired(false);
 
             builder.Property(f => f.ConteudoReport)
                 .HasMaxLength(1024);

@@ -10,7 +10,7 @@
         public DateTime DataHoraEnvio { get; set; }
         public StatusFeedbackEnum Status { get; set; } 
         public string Motivo { get; set; } // Motivo de report, se aplicável
-        public string ConteudoReport { get; set; }
+        public string? ConteudoReport { get; set; }
         public Usuario Remetente { get; set; }
         public Usuario Destinatario { get; set; }
     }
