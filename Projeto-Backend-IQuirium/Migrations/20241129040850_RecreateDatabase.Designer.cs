@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Projeto_Backend_IQuirium.Repository;
@@ -11,9 +12,11 @@ using Projeto_Backend_IQuirium.Repository;
 namespace Projeto_Backend_IQuirium.Migrations
 {
     [DbContext(typeof(ProjetoBackendIQuiriumContext))]
-    partial class ProjetoBackendIQuiriumContextModelSnapshot : ModelSnapshot
+    [Migration("20241129040850_RecreateDatabase")]
+    partial class RecreateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,6 +67,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                         .HasColumnType("character varying(2048)");
 
                     b.Property<string>("ConteudoReport")
+                        .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 
@@ -76,6 +80,7 @@ namespace Projeto_Backend_IQuirium.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Motivo")
+                        .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)");
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository.Mapping;
 
@@ -23,5 +24,11 @@ namespace Projeto_Backend_IQuirium.Repository
 
             base.OnModelCreating(modelBuilder);
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ConfigureWarnings(warnings =>
+                warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+        }
+
     }
 }
