@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿//using Microsoft.AspNetCore.Mvc;
 //using Projeto_Backend_IQuirium.Model;
 //using System.ComponentModel.DataAnnotations;
@@ -135,6 +136,8 @@
 //        public string Conteudo { get; set; }
 //    }
 //}
+=======
+>>>>>>> 87e76e59c7b35b308f66dcef6718a974ab2cd684
 using Microsoft.AspNetCore.Mvc;
 using Projeto_Backend_IQuirium.Model;
 using System.ComponentModel.DataAnnotations;

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Projeto_Backend_IQuirium.Repository;
 using Projeto_Backend_IQuirium.Interfaces;
-using Projeto_Backend_IQuirium.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,5 +33,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.Run();
 await app.RunAsync();
