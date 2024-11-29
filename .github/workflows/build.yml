@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - testes-marceu
+      - develop
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
