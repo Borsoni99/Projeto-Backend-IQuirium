@@ -41,21 +41,22 @@ namespace Projeto_Backend_IQuirium.Tests.Controllers
             Assert.Equal(id, returnValue.Id);
         }
 
-    public async Task ShouldReturnNotFoundWhenFeedbackIdDoesNotExist()
-    {
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var id = Guid.NewGuid();
-    
-        mockUnitOfWork.Setup(x => x.FeedbackProdutos.GetByIdAsync(id))
-            .ReturnsAsync((FeedbackProduto?)null);
-    
-        var controller = new FeedbacksProdutoController(mockUnitOfWork.Object);
-    
-        var result = await controller.GetFeedback(id.ToString());
-    
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-        Assert.Equal((int)HttpStatusCode.NotFound, notFoundResult.StatusCode);
-}
+        [Fact]
+        public static async Task ShouldReturnNotFoundWhenFeedbackIdDoesNotExist()
+        {
+            var mockUnitOfWork = new Mock<IUnitOfWork>();
+            var id = Guid.NewGuid();
+        
+            mockUnitOfWork.Setup(x => x.FeedbackProdutos.GetByIdAsync(id))
+                .ReturnsAsync((FeedbackProduto?)null);
+        
+            var controller = new FeedbacksProdutoController(mockUnitOfWork.Object);
+        
+            var result = await controller.GetFeedback(id.ToString());
+        
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal((int)HttpStatusCode.NotFound, notFoundResult.StatusCode);
+        }
 
         [Fact]
         public async Task ShouldPostFeedbackSuccessfully()
