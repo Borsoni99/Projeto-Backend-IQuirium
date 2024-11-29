@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Projeto_Backend_IQuirium.Controllers
 {
@@ -164,12 +165,15 @@ namespace Projeto_Backend_IQuirium.Controllers
     public class EnviarFeedbackUsuarioDTO
     {
         [Required(ErrorMessage = "ID do remetente é obrigatório")]
+        [JsonRequired]
         public Guid RemetenteId { get; set; }
 
         [Required(ErrorMessage = "ID do destinatário é obrigatório")]
+        [JsonRequired]
         public Guid DestinatarioId { get; set; }
 
         [Required(ErrorMessage = "Tipo de feedback é obrigatório")]
+        [JsonRequired]
         public TipoFeedbackEnum Tipo { get; set; }
 
         [Required(ErrorMessage = "Conteúdo é obrigatório")]
