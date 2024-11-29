@@ -9,9 +9,10 @@ namespace Projeto_Backend_IQuirium.Repository
         public ProjetoBackendIQuiriumContext(DbContextOptions<ProjetoBackendIQuiriumContext> options)
             : base(options) { }
 
-        public DbSet<Usuario> Usuarios { get; set; }
+        public virtual DbSet<Usuario> Usuarios { get; set; }
         public DbSet<FeedbackProduto> FeedbacksProdutos { get; set; }
-        public DbSet<FeedbackUsuario> FeedbacksUsuarios { get; set; }
+        public virtual DbSet<FeedbackUsuario> FeedbacksUsuarios { get; set; }
+        
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
