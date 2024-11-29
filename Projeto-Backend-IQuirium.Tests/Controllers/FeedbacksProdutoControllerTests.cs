@@ -41,25 +41,21 @@ namespace Projeto_Backend_IQuirium.Tests.Controllers
             Assert.Equal(id, returnValue.Id);
         }
 
-        [Fact]
-        public async Task ShouldReturnNotFoundWhenFeedbackIdDoesNotExist()
-        {
-            // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            var id = Guid.NewGuid();
-
-            mockUnitOfWork.Setup(x => x.FeedbackProdutos.GetByIdAsync(id))
-                .ReturnsAsync((FeedbackProduto)null);
-
-            var controller = new FeedbacksProdutoController(mockUnitOfWork.Object);
-
-            // Act
-            var result = await controller.GetFeedback(id.ToString());
-
-            // Assert
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal((int)HttpStatusCode.NotFound, notFoundResult.StatusCode);
-        }
+    public async Task ShouldReturnNotFoundWhenFeedbackIdDoesNotExist()
+    {
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        var id = Guid.NewGuid();
+    
+        mockUnitOfWork.Setup(x => x.FeedbackProdutos.GetByIdAsync(id))
+            .ReturnsAsync((FeedbackProduto?)null);
+    
+        var controller = new FeedbacksProdutoController(mockUnitOfWork.Object);
+    
+        var result = await controller.GetFeedback(id.ToString());
+    
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal((int)HttpStatusCode.NotFound, notFoundResult.StatusCode);
+}
 
         [Fact]
         public async Task ShouldPostFeedbackSuccessfully()
@@ -120,22 +116,20 @@ namespace Projeto_Backend_IQuirium.Tests.Controllers
         [Fact]
         public async Task ShouldReturnNotFoundWhenDeletingNonExistentFeedback()
         {
-            // Arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             var id = Guid.NewGuid();
 
             mockUnitOfWork.Setup(x => x.FeedbackProdutos.GetByIdAsync(id))
-                .ReturnsAsync((FeedbackProduto)null);
+                .ReturnsAsync((FeedbackProduto?)null);
 
             var controller = new FeedbacksProdutoController(mockUnitOfWork.Object);
 
-            // Act
             var result = await controller.DeleteFeedback(id);
 
-            // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal((int)HttpStatusCode.NotFound, notFoundResult.StatusCode);
         }
+
 
         [Fact]
         public async Task ShouldReturnBadRequestWhenDeletingWithEmptyGuid()
