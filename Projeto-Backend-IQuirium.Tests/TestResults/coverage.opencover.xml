@@ -2,9 +2,9 @@
 <CoverageSession>
   <Summary numSequencePoints="1194" visitedSequencePoints="125" numBranchPoints="62" visitedBranchPoints="25" sequenceCoverage="10.46" branchCoverage="40.32" maxCyclomaticComplexity="134" minCyclomaticComplexity="134" visitedClasses="15" numClasses="45" visitedMethods="33" numMethods="86" />
   <Modules>
-    <Module hash="DC8B33C6-D10E-43CB-9BE0-16A4A437EC2F">
+    <Module hash="9E11B323-2933-4485-AD5A-62493D57CA30">
       <ModulePath>Projeto-Backend-IQuirium.dll</ModulePath>
-      <ModuleTime>2024-11-29T03:50:08</ModuleTime>
+      <ModuleTime>2024-11-29T04:43:18</ModuleTime>
       <ModuleName>Projeto-Backend-IQuirium</ModuleName>
       <Files>
         <File uid="1" fullPath="C:\Users\thiag\source\repos\Projeto-Backend-IQuirium\Projeto-Backend-IQuirium\Program.cs" />

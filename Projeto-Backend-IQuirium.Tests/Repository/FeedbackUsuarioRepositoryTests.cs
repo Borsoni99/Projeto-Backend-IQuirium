@@ -1,98 +1,216 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Projeto_Backend_IQuirium.Model;
 using Projeto_Backend_IQuirium.Repository;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Projeto_Backend_IQuirium.Tests.Repository
+namespace Projeto_Backend_IQuirium.Tests
 {
     public class FeedbackUsuarioRepositoryTests
     {
-        private readonly ProjetoBackendIQuiriumContext _context;
-        private readonly FeedbackUsuarioRepository _repository;
+        private DbContextOptions<ProjetoBackendIQuiriumContext> _options;
 
         public FeedbackUsuarioRepositoryTests()
         {
-            var options = new DbContextOptionsBuilder<ProjetoBackendIQuiriumContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            _options = new DbContextOptionsBuilder<ProjetoBackendIQuiriumContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Usa um novo banco para cada teste
                 .Options;
-
-            _context = new ProjetoBackendIQuiriumContext(options);
-            _repository = new FeedbackUsuarioRepository(_context);
         }
 
         [Fact]
-        public async Task GetByIdAsync_RetornaFeedbackUsuario_QuandoIdExiste()
+        public async Task GetByIdAsync_DeveRetornarFeedbackComIdEspecifico()
         {
             // Arrange
-            var feedback = new FeedbackUsuario
+            var feedbackId = Guid.NewGuid();
+            var remetente = new Usuario
             {
                 Id = Guid.NewGuid(),
-                // Inicialize outras propriedades conforme necessário
+                Nome = "Remetente",
+                Email = "remetente@example.com"
             };
-            _context.FeedbacksUsuarios.Add(feedback);
-            await _context.SaveChangesAsync();
+            var destinatario = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Destinatário",
+                Email = "destinatario@example.com"
+            };
+
+            var feedback = new FeedbackUsuario
+            {
+                Id = feedbackId,
+                Remetente = remetente,
+                Destinatario = destinatario,
+                ConteudoFeedback = "Ótimo trabalho!",
+                ConteudoReport = "Nenhum problema.",
+                Motivo = "Avaliação de desempenho"
+            };
+
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                context.Usuarios.Add(remetente);
+                context.Usuarios.Add(destinatario);
+                context.FeedbacksUsuarios.Add(feedback);
+                await context.SaveChangesAsync();
+            }
 
             // Act
-            var resultado = await _repository.GetByIdAsync(feedback.Id);
+            FeedbackUsuario resultado;
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                var repository = new FeedbackUsuarioRepository(context);
+                resultado = await repository.GetByIdAsync(feedbackId);
+            }
 
             // Assert
             Assert.NotNull(resultado);
-            Assert.Equal(feedback.Id, resultado.Id);
+            Assert.Equal(feedbackId, resultado.Id);
+            Assert.Equal("Remetente", resultado.Remetente.Nome);
+            Assert.Equal("Destinatário", resultado.Destinatario.Nome);
         }
 
         [Fact]
-        public async Task GetByIdAsync_RetornaNull_QuandoIdNaoExiste()
+        public async Task GetAllAsync_DeveRetornarTodosOsFeedbacks()
         {
             // Arrange
-            var idInexistente = Guid.NewGuid();
+            var remetente1 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Remetente1",
+                Email = "remetente1@example.com"
+            };
+            var destinatario1 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Destinatário1",
+                Email = "destinatario1@example.com"
+            };
+            var remetente2 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Remetente2",
+                Email = "remetente2@example.com"
+            };
+            var destinatario2 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Destinatário2",
+                Email = "destinatario2@example.com"
+            };
+
+            var feedbacks = new List<FeedbackUsuario>
+            {
+                new FeedbackUsuario
+                {
+                    Id = Guid.NewGuid(),
+                    Remetente = remetente1,
+                    Destinatario = destinatario1,
+                    ConteudoFeedback = "Bom trabalho.",
+                    ConteudoReport = "Sem problemas.",
+                    Motivo = "Revisão mensal"
+                },
+                new FeedbackUsuario
+                {
+                    Id = Guid.NewGuid(),
+                    Remetente = remetente2,
+                    Destinatario = destinatario2,
+                    ConteudoFeedback = "Precisa melhorar.",
+                    ConteudoReport = "Atrasos frequentes.",
+                    Motivo = "Feedback trimestral"
+                }
+            };
+
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                context.Usuarios.AddRange(remetente1, destinatario1, remetente2, destinatario2);
+                context.FeedbacksUsuarios.AddRange(feedbacks);
+                await context.SaveChangesAsync();
+            }
 
             // Act
-            var resultado = await _repository.GetByIdAsync(idInexistente);
+            IEnumerable<FeedbackUsuario> resultado;
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                var repository = new FeedbackUsuarioRepository(context);
+                resultado = await repository.GetAllAsync();
+            }
 
             // Assert
-            Assert.Null(resultado);
-        }
-
-        [Fact]
-        public async Task GetAllAsync_RetornaTodosFeedbacksUsuarios()
-        {
-            // Arrange
-            var feedback1 = new FeedbackUsuario { Id = Guid.NewGuid() /*, outras propriedades */ };
-            var feedback2 = new FeedbackUsuario { Id = Guid.NewGuid() /*, outras propriedades */ };
-            _context.FeedbacksUsuarios.AddRange(feedback1, feedback2);
-            await _context.SaveChangesAsync();
-
-            // Act
-            var resultado = await _repository.GetAllAsync();
-
-            // Assert
-            Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count());
         }
 
         [Fact]
-        public async Task FindAsync_RetornaFeedbacksQueSatisfazemPredicado()
+        public async Task FindAsync_DeveRetornarFeedbacksQueAtendemAoPredicado()
         {
             // Arrange
-            var feedback1 = new FeedbackUsuario { Id = Guid.NewGuid(), /* outras propriedades */ };
-            var feedback2 = new FeedbackUsuario { Id = Guid.NewGuid(), /* outras propriedades */ };
-            _context.FeedbacksUsuarios.AddRange(feedback1, feedback2);
-            await _context.SaveChangesAsync();
+            var destinatarioId = Guid.NewGuid();
+            var remetente1 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Remetente1",
+                Email = "remetente1@example.com"
+            };
+            var destinatario1 = new Usuario
+            {
+                Id = destinatarioId,
+                Nome = "Destinatário1",
+                Email = "destinatario1@example.com"
+            };
+            var remetente2 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Remetente2",
+                Email = "remetente2@example.com"
+            };
+            var destinatario2 = new Usuario
+            {
+                Id = Guid.NewGuid(),
+                Nome = "Destinatário2",
+                Email = "destinatario2@example.com"
+            };
 
-            // Define um predicado que corresponde a feedback1
-            Expression<Func<FeedbackUsuario, bool>> predicado = f => f.Id == feedback1.Id;
+            var feedbacks = new List<FeedbackUsuario>
+            {
+                new FeedbackUsuario
+                {
+                    Id = Guid.NewGuid(),
+                    Remetente = remetente1,
+                    Destinatario = destinatario1,
+                    ConteudoFeedback = "Excelente!",
+                    ConteudoReport = "Nenhum problema.",
+                    Motivo = "Feedback anual"
+                },
+                new FeedbackUsuario
+                {
+                    Id = Guid.NewGuid(),
+                    Remetente = remetente2,
+                    Destinatario = destinatario2,
+                    ConteudoFeedback = "Bom desempenho.",
+                    ConteudoReport = "Alguns atrasos.",
+                    Motivo = "Revisão semestral"
+                }
+            };
+
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                context.Usuarios.AddRange(remetente1, destinatario1, remetente2, destinatario2);
+                context.FeedbacksUsuarios.AddRange(feedbacks);
+                await context.SaveChangesAsync();
+            }
 
             // Act
-            var resultado = await _repository.FindAsync(predicado);
+            IEnumerable<FeedbackUsuario> resultado;
+            using (var context = new ProjetoBackendIQuiriumContext(_options))
+            {
+                var repository = new FeedbackUsuarioRepository(context);
+                resultado = await repository.FindAsync(f => f.Destinatario.Id == destinatarioId);
+            }
 
             // Assert
-            Assert.NotNull(resultado);
             Assert.Single(resultado);
-            Assert.Equal(feedback1.Id, resultado.First().Id);
+            Assert.Equal(destinatarioId, resultado.First().Destinatario.Id);
         }
     }
 }
